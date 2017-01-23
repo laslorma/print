@@ -1,5 +1,7 @@
 package hello.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 /**
@@ -28,8 +30,7 @@ public class App {
 
     @Id
     @GeneratedValue
-    @NotNull
-    @Column(name = "id", unique = true)
+    @Column(name = "id")
     public Integer getId() {
         return id;
     }

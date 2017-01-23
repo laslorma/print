@@ -4,7 +4,12 @@ import hello.domain.App;
 import hello.domain.AppDao;
 
 import org.hibernate.Transaction;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,20 +23,45 @@ public class AppController {
     @Autowired
     private AppDao appDao;
 
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
-    //@ResponseBody
-    public String create(@RequestParam(value="domain", defaultValue="smile.philosoph.net") String domain) {
-        App app = null;
+    private final Logger log = LoggerFactory.getLogger(AppController.class);
+
+
+    /**
+     * POST
+     * Create a new app
+     * @param app
+     * @return
+     */
+    @RequestMapping(value = "/create", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<App> create(@RequestBody App app) {
+
+
+
         try {
 
-            app= new App(domain);
+            // Validando
+            if (appDao.findByDomain(app.getDomain())!=null) {
 
-            appDao.save(app);
+                log.error("App domain taken: " + app.getDomain());
+
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+
+            }else{
+
+                // Salvando
+                appDao.save(app);
+
+            }
         }
         catch (Exception ex) {
-            return "Error creating the user: " + ex.toString();
+
+            log.error("Error creating app "+ ex.getMessage());
+
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
-        return "User succesfully created! (id = " + app.getId() + ")";
+        return new ResponseEntity<App>(app,HttpStatus.OK);
     }
 
     @RequestMapping(value ="/delete", method = RequestMethod.POST)
@@ -62,8 +92,8 @@ public class AppController {
     }
 
     @RequestMapping(value = {"/{appId}"},
-                method = RequestMethod.GET,
-                produces="application/json")
+            method = RequestMethod.GET,
+            produces="application/json")
     public App get(@PathVariable(value = "appId")  int appId)
     {
         App app = null;

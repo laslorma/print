@@ -36,5 +36,13 @@ public class AppDaoTests {
 
     }
 
+    @Test
+    public void findAppByDomain(){
+
+        App app = appDao.findByDomain("test.com.ve") ;
+
+        Assert.assertTrue(app!= null);
+
+    }
 
 }
