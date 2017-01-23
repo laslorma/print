@@ -36,8 +36,6 @@ public class AppController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<App> create(@RequestBody App app) {
 
-
-
         try {
 
             // Validando
@@ -64,11 +62,27 @@ public class AppController {
         return new ResponseEntity<App>(app,HttpStatus.OK);
     }
 
-    @RequestMapping(value ="/delete", method = RequestMethod.POST)
-    @ResponseBody
-    public String delete(Integer id) {
+    @RequestMapping(value = {"/{appId}"},
+            method = RequestMethod.GET,
+            produces="application/json")
+    public ResponseEntity<App>  get(@PathVariable(value = "appId")  int appId)
+    {
+        App app = null;
         try {
-            App app = appDao.findOne(id);
+            app = appDao.findOne(appId);
+        }
+        catch (Exception ex) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<App>(app,HttpStatus.OK);
+    }
+
+    @RequestMapping(value ="/delete", method = RequestMethod.DELETE)
+    @ResponseBody
+    public String delete(@PathVariable(value = "appId")  int appId) {
+        try {
+            App app = appDao.findOne(appId);
             appDao.delete(app);
         }
         catch (Exception ex) {
@@ -91,21 +105,7 @@ public class AppController {
         return "The user id is: " + userId;
     }
 
-    @RequestMapping(value = {"/{appId}"},
-            method = RequestMethod.GET,
-            produces="application/json")
-    public App get(@PathVariable(value = "appId")  int appId)
-    {
-        App app = null;
-        try {
-            app = appDao.findOne(appId);
-        }
-        catch (Exception ex) {
-            return app;
-        }
 
-        return app;
-    }
 
 
     @RequestMapping("/update")
