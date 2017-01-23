@@ -62,6 +62,11 @@ public class AppController {
         return new ResponseEntity<App>(app,HttpStatus.OK);
     }
 
+    /**
+     * GET
+     * @param appId
+     * @return
+     */
     @RequestMapping(value = {"/{appId}"},
             method = RequestMethod.GET,
             produces="application/json")
@@ -78,6 +83,11 @@ public class AppController {
         return new ResponseEntity<App>(app,HttpStatus.OK);
     }
 
+    /**
+     * DELETE
+     * @param appId
+     * @return
+     */
     @RequestMapping(value ="/{appId}", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -92,18 +102,32 @@ public class AppController {
         return new ResponseEntity<App>(HttpStatus.OK);
     }
 
-    @RequestMapping("/get-by-domain")
+    /**
+     * GET
+     *
+     * Nota: el .+ en el request mapping value es para escapar los puntos del nombre de dominio. Por ejemplo: tes.com.ve
+     * se trunca a tes.com si no tiene el .+
+     *
+     * @param domain
+     * @return
+     */
+    @RequestMapping(value = "/get-by-domain/{domain:.+}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String getByDomain(String domain) {
-        String userId;
+    public ResponseEntity<App> getByDomain(@PathVariable(value = "domain") String domain) {
+
+
+        App app = null;
         try {
-            App user = appDao.findByDomain(domain);
-            userId = String.valueOf(user.getId());
+             app = appDao.findByDomain(domain);
         }
         catch (Exception ex) {
-            return "User not found";
+
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+
         }
-        return "The user id is: " + userId;
+
+        return new ResponseEntity<App>(app,HttpStatus.OK);
     }
 
 
