@@ -32,7 +32,7 @@ public class AppController {
      * @param app
      * @return
      */
-    @RequestMapping(value = "/create", method = RequestMethod.POST,
+    @RequestMapping(method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<App> create(@RequestBody App app) {
 
@@ -97,8 +97,10 @@ public class AppController {
             appDao.delete(app);
         }
         catch (Exception ex) {
+
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
+
         return new ResponseEntity<App>(HttpStatus.OK);
     }
 
@@ -119,10 +121,11 @@ public class AppController {
 
         App app = null;
         try {
-             app = appDao.findByDomain(domain);
+            app = appDao.findByDomain(domain);
         }
         catch (Exception ex) {
 
+            log.error("Error getByDomain "+ex.getMessage());
             return new ResponseEntity(HttpStatus.NOT_FOUND);
 
         }
@@ -131,21 +134,31 @@ public class AppController {
     }
 
 
-
-
-    @RequestMapping("/update")
+    /**
+     * PUT
+     * @param app
+     * @return
+     */
+    @RequestMapping(
+            method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String updateUser(Integer id, String domain) {
+    public ResponseEntity<App> updateApp(@RequestBody App app) {
+
         try {
-            App app = appDao.findOne(id);
-            app.getDomain();
+            // Hace save, update o merge depndiendo el caso, lo detecta automaticamente
+             app = appDao.save(app);
 
             appDao.save(app);
         }
         catch (Exception ex) {
-            return "Error updating the user: " + ex.toString();
+            log.error( "Error updating the app: " + ex.toString());
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
-        return "User succesfully updated!";
+
+        return new ResponseEntity<App> (app,HttpStatus.OK);
+
     }
 
 
