@@ -6,15 +6,13 @@ import hello.domain.AppDao;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by Victor on 16-Jan-17.
  */
 @RestController
+@RequestMapping("app")
 public class AppController {
 
     @Autowired
@@ -22,10 +20,12 @@ public class AppController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     //@ResponseBody
-    public String create(String domain) {
+    public String create(@RequestParam(value="domain", defaultValue="smile.philosoph.net") String domain) {
         App app = null;
         try {
+
             app= new App(domain);
+
             appDao.save(app);
         }
         catch (Exception ex) {
@@ -61,12 +61,14 @@ public class AppController {
         return "The user id is: " + userId;
     }
 
-    @RequestMapping("/get")
-    public App get(Integer id)
+    @RequestMapping(value = {"/{appId}"},
+                method = RequestMethod.GET,
+                produces="application/json")
+    public App get(@PathVariable(value = "appId")  int appId)
     {
         App app = null;
         try {
-            app = appDao.findOne(id);
+            app = appDao.findOne(appId);
         }
         catch (Exception ex) {
             return app;
