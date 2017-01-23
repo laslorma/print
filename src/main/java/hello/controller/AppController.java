@@ -78,17 +78,18 @@ public class AppController {
         return new ResponseEntity<App>(app,HttpStatus.OK);
     }
 
-    @RequestMapping(value ="/delete", method = RequestMethod.DELETE)
+    @RequestMapping(value ="/{appId}", method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String delete(@PathVariable(value = "appId")  int appId) {
+    public ResponseEntity delete(@PathVariable(value = "appId")  int appId) {
         try {
             App app = appDao.findOne(appId);
             appDao.delete(app);
         }
         catch (Exception ex) {
-            return "Error deleting the user: " + ex.toString();
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
-        return "User succesfully deleted!";
+        return new ResponseEntity<App>(HttpStatus.OK);
     }
 
     @RequestMapping("/get-by-domain")
