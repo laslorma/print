@@ -1,0 +1,17 @@
+# Created by .ignore support plugin (hsz.mobi)
+target/
+bower_components/
+node_modules/
+*.iml
+*.ipr
+*.iws
+*.ids
+#.*
+.#*
+*.*~
+catwizard.log
+.idea/**/*
+
+# Ionic ignores
+platforms/
+plugins/
