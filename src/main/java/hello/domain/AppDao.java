@@ -1,6 +1,8 @@
 package hello.domain;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
@@ -12,5 +14,7 @@ import javax.transaction.Transactional;
 @Repository
 public interface AppDao extends CrudRepository<App, Integer>{
 
-    public App findByDomain(String email);
+    @Query("select a from App a where a.domain = :domain")
+    public App findByDomain(@Param("domain")String domain);
+
 }

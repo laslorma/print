@@ -4,7 +4,12 @@ import hello.domain.App;
 import hello.domain.AppDao;
 
 import org.hibernate.Transaction;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,79 +23,142 @@ public class AppController {
     @Autowired
     private AppDao appDao;
 
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
-    //@ResponseBody
-    public String create(@RequestParam(value="domain", defaultValue="smile.philosoph.net") String domain) {
-        App app = null;
+    private final Logger log = LoggerFactory.getLogger(AppController.class);
+
+
+    /**
+     * POST
+     * Create a new app
+     * @param app
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<App> create(@RequestBody App app) {
+
         try {
 
-            app= new App(domain);
+            // Validando
+            if (appDao.findByDomain(app.getDomain())!=null) {
 
-            appDao.save(app);
+                log.error("App domain taken: " + app.getDomain());
+
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+
+            }else{
+
+                // Salvando
+                appDao.save(app);
+
+            }
         }
         catch (Exception ex) {
-            return "Error creating the user: " + ex.toString();
+
+            log.error("Error creating app "+ ex.getMessage());
+
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
-        return "User succesfully created! (id = " + app.getId() + ")";
+        return new ResponseEntity<App>(app,HttpStatus.OK);
     }
 
-    @RequestMapping(value ="/delete", method = RequestMethod.POST)
-    @ResponseBody
-    public String delete(Integer id) {
-        try {
-            App app = appDao.findOne(id);
-            appDao.delete(app);
-        }
-        catch (Exception ex) {
-            return "Error deleting the user: " + ex.toString();
-        }
-        return "User succesfully deleted!";
-    }
-
-    @RequestMapping("/get-by-domain")
-    @ResponseBody
-    public String getByDomain(String domain) {
-        String userId;
-        try {
-            App user = appDao.findByDomain(domain);
-            userId = String.valueOf(user.getId());
-        }
-        catch (Exception ex) {
-            return "User not found";
-        }
-        return "The user id is: " + userId;
-    }
-
+    /**
+     * GET
+     * @param appId
+     * @return
+     */
     @RequestMapping(value = {"/{appId}"},
-                method = RequestMethod.GET,
-                produces="application/json")
-    public App get(@PathVariable(value = "appId")  int appId)
+            method = RequestMethod.GET,
+            produces="application/json")
+    public ResponseEntity<App>  get(@PathVariable(value = "appId")  int appId)
     {
         App app = null;
         try {
             app = appDao.findOne(appId);
         }
         catch (Exception ex) {
-            return app;
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return app;
+        return new ResponseEntity<App>(app,HttpStatus.OK);
+    }
+
+    /**
+     * DELETE
+     * @param appId
+     * @return
+     */
+    @RequestMapping(value ="/{appId}", method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity delete(@PathVariable(value = "appId")  int appId) {
+        try {
+            App app = appDao.findOne(appId);
+            appDao.delete(app);
+        }
+        catch (Exception ex) {
+
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<App>(HttpStatus.OK);
+    }
+
+    /**
+     * GET
+     *
+     * Nota: el .+ en el request mapping value es para escapar los puntos del nombre de dominio. Por ejemplo: tes.com.ve
+     * se trunca a tes.com si no tiene el .+
+     *
+     * @param domain
+     * @return
+     */
+    @RequestMapping(value = "/get-by-domain/{domain:.+}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<App> getByDomain(@PathVariable(value = "domain") String domain) {
+
+
+        App app = null;
+        try {
+            app = appDao.findByDomain(domain);
+        }
+        catch (Exception ex) {
+
+            log.error("Error getByDomain "+ex.getMessage());
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+
+        }
+
+        return new ResponseEntity<App>(app,HttpStatus.OK);
     }
 
 
-    @RequestMapping("/update")
+    /**
+     * PUT
+     * @param app
+     * @return
+     */
+    @RequestMapping(
+            method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String updateUser(Integer id, String domain) {
+    public ResponseEntity<App> updateApp(@RequestBody App app) {
+
         try {
-            App app = appDao.findOne(id);
-            app.getDomain();
+            // Hace save, update o merge depndiendo el caso, lo detecta automaticamente
+             app = appDao.save(app);
 
             appDao.save(app);
         }
         catch (Exception ex) {
-            return "Error updating the user: " + ex.toString();
+            log.error( "Error updating the app: " + ex.toString());
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
-        return "User succesfully updated!";
+
+        return new ResponseEntity<App> (app,HttpStatus.OK);
+
     }
 
 

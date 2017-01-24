@@ -15,3 +15,5 @@ catwizard.log
 # Ionic ignores
 platforms/
 plugins/
+
+*.class
