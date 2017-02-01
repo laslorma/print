@@ -2,10 +2,9 @@ package hello.domain;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-
 import javax.persistence.*;
-import java.security.Timestamp;
-import java.sql.Time;
+import java.sql.Timestamp;
+
 
 /**
  * Created by Victor on 25-Jan-17.

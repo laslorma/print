@@ -5,7 +5,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
 /**
  * Created by Victor on 24-Jan-17.

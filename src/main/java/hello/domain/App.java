@@ -2,11 +2,9 @@ package hello.domain;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.security.Timestamp;
-import java.util.Collection;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
