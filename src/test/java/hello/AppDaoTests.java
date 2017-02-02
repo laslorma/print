@@ -1,7 +1,7 @@
 package hello;
 
-import hello.domain.App;
-import hello.DAO.AppDao;
+import io.catwizard.domain.App;
+import io.catwizard.DAO.AppDao;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

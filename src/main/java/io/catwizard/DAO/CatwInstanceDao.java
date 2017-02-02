@@ -1,6 +1,6 @@
-package hello.DAO;
+package io.catwizard.DAO;
 
-import hello.domain.CatwProduct;
+import io.catwizard.domain.CatwInstance;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,5 +11,5 @@ import javax.transaction.Transactional;
  */
 @Transactional
 @Repository
-public interface CatwProductDao extends CrudRepository<CatwProduct, Integer> {
+public interface CatwInstanceDao extends CrudRepository<CatwInstance, Integer> {
 }

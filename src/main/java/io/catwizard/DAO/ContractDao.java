@@ -1,6 +1,6 @@
-package hello.DAO;
+package io.catwizard.DAO;
 
-import hello.domain.Payment;
+import io.catwizard.domain.Contract;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,5 +11,5 @@ import javax.transaction.Transactional;
  */
 @Transactional
 @Repository
-public interface PaymentDao extends CrudRepository<Payment, Integer> {
+public interface ContractDao extends CrudRepository<Contract, Integer> {
 }
