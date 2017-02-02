@@ -1,6 +1,6 @@
-package hello.DAO;
+package io.catwizard.DAO;
 
-import hello.domain.App;
+import io.catwizard.domain.App;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

@@ -38,7 +38,7 @@ CREATE TABLE `app` (
   KEY `fk_company_app_idx` (`company_id`),
   CONSTRAINT `fk_catw_instance_app` FOREIGN KEY (`catw_instance_id`) REFERENCES `catw_instance` (`catw_instance_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_company_app` FOREIGN KEY (`company_id`) REFERENCES `company` (`company_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for catw_instance
@@ -56,7 +56,7 @@ CREATE TABLE `catw_instance` (
   UNIQUE KEY `catw_instance_id_UNIQUE` (`catw_instance_id`),
   KEY `fk_server_catw_instance_idx` (`server_id`),
   CONSTRAINT `fk_server_catw_instance` FOREIGN KEY (`server_id`) REFERENCES `server` (`server_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for catw_product
@@ -67,8 +67,11 @@ CREATE TABLE `catw_product` (
   `name` varchar(100) NOT NULL,
   `type` enum('directive','module','service') default 'directive',
   `description` varchar(200) default NULL,
+  `product_id` int(11) NULL DEFAULT NULL,
   PRIMARY KEY  (`catw_product_id`),
-  UNIQUE KEY `catw_product_id_UNIQUE` (`catw_product_id`)
+  UNIQUE KEY `catw_product_id_UNIQUE` (`catw_product_id`),
+  KEY `fk_catw_product_id_product_id` (`product_id`),
+  CONSTRAINT `fk_catw_product_id_product_id` FOREIGN KEY (`product_id`) REFERENCES `catw_product` (`catw_product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
@@ -83,7 +86,7 @@ CREATE TABLE `company` (
   `legal_identity_number` varchar(45) default NULL,
   PRIMARY KEY  (`company_id`),
   UNIQUE KEY `company_id_UNIQUE` (`company_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for contact
@@ -158,4 +161,4 @@ CREATE TABLE `server` (
   `capacity` int(11) default NULL,
   PRIMARY KEY  (`server_id`),
   UNIQUE KEY `server_id_UNIQUE` (`server_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;

@@ -1,7 +1,7 @@
-package hello.controller;
+package io.catwizard.controller;
 
-import hello.domain.App;
-import hello.DAO.AppDao;
+import io.catwizard.domain.Company;
+import io.catwizard.DAO.CompanyDao;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -10,43 +10,41 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 /**
- * Created by Victor on 16-Jan-17.
+ * Created by Victor on 30-Jan-17.
  */
 @RestController
-@RequestMapping("app")
-public class AppController {
-
+@RequestMapping("company")
+public class CompanyController {
     @Autowired
-    private AppDao appDao;
+    private CompanyDao companyDao;
 
-    private final Logger log = LoggerFactory.getLogger(AppController.class);
-
+    private final Logger log = LoggerFactory.getLogger(CompanyController.class);
 
     /**
      * POST
      * Create a new app
-     * @param app
+     * @param company
      * @return
      */
     @RequestMapping(method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<App> create(@RequestBody App app) {
+    public ResponseEntity<Company> create(@RequestBody Company company) {
 
         try {
 
             // Validando
-            if (appDao.findByDomain(app.getDomain())!=null) {
+            if (companyDao.findByName(company.getName())!=null) {
 
-                log.error("App domain taken: " + app.getDomain());
+                log.error("Company name taken: " + company.getName());
 
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
 
             }else{
 
                 // Salvando
-                appDao.save(app);
+                companyDao.save(company);
+
             }
         }
         catch (Exception ex) {
@@ -56,69 +54,66 @@ public class AppController {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
-        return new ResponseEntity<App>(app,HttpStatus.OK);
+        return new ResponseEntity<Company>(company,HttpStatus.OK);
     }
 
     /**
      * GET
-     * @param appId
+     * @param companyId
      * @return
      */
-    @RequestMapping(value = {"/{appId}"},
+    @RequestMapping(value = {"/{companyId}"},
             method = RequestMethod.GET,
             produces="application/json")
-    public ResponseEntity<App>  get(@PathVariable(value = "appId")  int appId)
+    public ResponseEntity<Company>  get(@PathVariable(value = "companyId")  int companyId)
     {
-        App app = null;
+        Company company = null;
         try {
-            app = appDao.findOne(appId);
+            company = companyDao.findOne(companyId);
         }
         catch (Exception ex) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<App>(app,HttpStatus.OK);
+        return new ResponseEntity<Company>(company,HttpStatus.OK);
     }
 
     /**
      * DELETE
-     * @param appId
+     * @param companyId
      * @return
      */
-    @RequestMapping(value ="/{appId}", method = RequestMethod.DELETE,
+    @RequestMapping(value ="/{companyId}", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity delete(@PathVariable(value = "appId")  int appId) {
+    public ResponseEntity delete(@PathVariable(value = "companyId")  int companyId) {
         try {
-            App app = appDao.findOne(appId);
-            appDao.delete(app);
+            Company company = companyDao.findOne(companyId);
+            companyDao.delete(company);
         }
         catch (Exception ex) {
 
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<App>(HttpStatus.OK);
+        return new ResponseEntity<Company>(HttpStatus.OK);
     }
 
     /**
      * GET
      *
-     * Nota: el .+ en el request mapping value es para escapar los puntos del nombre de dominio. Por ejemplo: tes.com.ve
-     * se trunca a tes.com si no tiene el .+
-     *
-     * @param domain
+     * @param name
      * @return
      */
-    @RequestMapping(value = "/get-by-domain/{domain:.+}", method = RequestMethod.GET,
+    @RequestMapping(value = "/get-by-name/{name}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<App> getByDomain(@PathVariable(value = "domain") String domain) {
+    public ResponseEntity<Company> getByDomain(@PathVariable(value = "name") String name) {
 
 
-        App app = null;
+        Company company = null;
         try {
-            app = appDao.findByDomain(domain);
+            company = companyDao.findByName(name);
         }
         catch (Exception ex) {
 
@@ -127,26 +122,25 @@ public class AppController {
 
         }
 
-        return new ResponseEntity<App>(app,HttpStatus.OK);
+        return new ResponseEntity<Company>(company,HttpStatus.OK);
     }
-
 
     /**
      * PUT
-     * @param app
+     * @param company
      * @return
      */
     @RequestMapping(
             method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<App> updateApp(@RequestBody App app) {
+    public ResponseEntity<Company> updateApp(@RequestBody Company company) {
 
         try {
             // Hace save, update o merge depndiendo el caso, lo detecta automaticamente
-             app = appDao.save(app);
+            company = companyDao.save(company);
 
-            appDao.save(app);
+            companyDao.save(company);
         }
         catch (Exception ex) {
             log.error( "Error updating the app: " + ex.toString());
@@ -154,10 +148,9 @@ public class AppController {
 
         }
 
-        return new ResponseEntity<App> (app,HttpStatus.OK);
+        return new ResponseEntity<Company> (company,HttpStatus.OK);
 
     }
-
 
 
 }
