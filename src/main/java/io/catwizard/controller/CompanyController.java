@@ -2,7 +2,6 @@ package io.catwizard.controller;
 
 import io.catwizard.domain.Company;
 import io.catwizard.DAO.CompanyDao;
-
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

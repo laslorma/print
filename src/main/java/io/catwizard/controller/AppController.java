@@ -3,23 +3,33 @@ package io.catwizard.controller;
 import io.catwizard.domain.App;
 import io.catwizard.DAO.AppDao;
 
+import io.catwizard.domain.Greeting;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import io.catwizard.service.License;
+
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Created by Victor on 16-Jan-17.
  */
+@Configuration
 @RestController
 @RequestMapping("app")
 public class AppController {
 
     @Autowired
     private AppDao appDao;
+    @Value("${key.prop}")
+    private String key;
 
     private final Logger log = LoggerFactory.getLogger(AppController.class);
 
@@ -36,7 +46,7 @@ public class AppController {
 
         try {
 
-            // Validando
+            //
             if (appDao.findByDomain(app.getDomain())!=null) {
 
                 log.error("App domain taken: " + app.getDomain());
@@ -156,6 +166,25 @@ public class AppController {
 
         return new ResponseEntity<App> (app,HttpStatus.OK);
 
+    }
+
+    @RequestMapping(value = {"/license/{domain:.+}"},
+            method = RequestMethod.GET,
+            produces="application/json")
+    public Greeting generateLicense(@PathVariable(value = "domain") String domain)
+    {
+        String result = null;
+        try {
+
+            License lic = new License();
+            lic.setKey(key);
+            result = lic.generateLicence(domain);
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return new Greeting(2,result);
     }
 
 
