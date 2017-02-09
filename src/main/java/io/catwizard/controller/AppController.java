@@ -187,6 +187,27 @@ public class AppController {
         return new Greeting(2,result);
     }
 
+    @RequestMapping(value = {"/license-verify/{domain:.+}"},
+            method = RequestMethod.GET,
+            produces=MediaType.APPLICATION_JSON_VALUE)
+    public Greeting verifyLicense(@PathVariable(value = "domain") String domain,
+                                  @RequestHeader(value = "key", required = true) String license)
+    {
+        Boolean result = null;
+        try {
+
+            License lic = new License();
+            lic.setKey(key);
+            lic.setAppDao(appDao);
+            result = lic.verifyLicense(domain,license);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new Greeting(2,result.toString());
+    }
+
 
 
 }
