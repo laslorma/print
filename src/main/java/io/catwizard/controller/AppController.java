@@ -180,17 +180,18 @@ public class AppController {
             lic.setKey(key);
             result = lic.generateLicence(domain);
 
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+        } catch (NoSuchAlgorithmException ex) {
+            log.error( "Error generating license to domain ("+domain+"): " + ex.toString());
+            ex.printStackTrace();
         }
 
         return new Greeting(2,result);
     }
 
-    @RequestMapping(value = {"/license-verify/{domain:.+}"},
+    @RequestMapping(value = {"/license-verify"},
             method = RequestMethod.GET,
             produces=MediaType.APPLICATION_JSON_VALUE)
-    public Greeting verifyLicense(@PathVariable(value = "domain") String domain,
+    public Greeting verifyLicense(@RequestHeader(value = "domain", required = true) String domain,
                                   @RequestHeader(value = "key", required = true) String license)
     {
         Boolean result = null;
@@ -201,8 +202,9 @@ public class AppController {
             lic.setAppDao(appDao);
             result = lic.verifyLicense(domain,license);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            log.error( "Error checking license ("+license+") of domain ("+domain+"): " + ex.toString());
+            ex.printStackTrace();
         }
 
         return new Greeting(2,result.toString());
