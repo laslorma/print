@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Created by Victor on 07-Feb-17.
  */
-public class License {
+public class LicenseService {
 
     private AppDao appDao;
     private String key;

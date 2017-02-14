@@ -3,7 +3,6 @@ package io.catwizard.controller;
 import io.catwizard.domain.App;
 import io.catwizard.DAO.AppDao;
 
-import io.catwizard.domain.Greeting;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.catwizard.service.License;
+import io.catwizard.service.LicenseService;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -171,43 +170,43 @@ public class AppController {
     @RequestMapping(value = {"/license/{domain:.+}"},
             method = RequestMethod.GET,
             produces="application/json")
-    public Greeting generateLicense(@PathVariable(value = "domain") String domain)
+    public ResponseEntity<String> generateLicense(@PathVariable(value = "domain") String domain)
     {
         String result = null;
         try {
 
-            License lic = new License();
+            LicenseService lic = new LicenseService();
             lic.setKey(key);
             result = lic.generateLicence(domain);
 
         } catch (NoSuchAlgorithmException ex) {
             log.error( "Error generating license to domain ("+domain+"): " + ex.toString());
-            ex.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new Greeting(2,result);
+        return new ResponseEntity<String> (result,HttpStatus.OK);
     }
 
     @RequestMapping(value = {"/license-verify"},
             method = RequestMethod.GET,
             produces=MediaType.APPLICATION_JSON_VALUE)
-    public Greeting verifyLicense(@RequestHeader(value = "domain", required = true) String domain,
+    public ResponseEntity<Boolean> verifyLicense(@RequestHeader(value = "domain", required = true) String domain,
                                   @RequestHeader(value = "key", required = true) String license)
     {
         Boolean result = null;
         try {
 
-            License lic = new License();
+            LicenseService lic = new LicenseService();
             lic.setKey(key);
             lic.setAppDao(appDao);
             result = lic.verifyLicense(domain,license);
 
         } catch (Exception ex) {
             log.error( "Error checking license ("+license+") of domain ("+domain+"): " + ex.toString());
-            ex.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new Greeting(2,result.toString());
+        return new ResponseEntity<Boolean> (result,(result == true ? HttpStatus.OK: HttpStatus.FORBIDDEN));
     }
 
 
